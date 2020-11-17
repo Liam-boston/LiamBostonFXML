@@ -48,6 +48,9 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private Button buttonReadByNameAge;
+    
+    @FXML
+    private Button buttonSearch;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -56,7 +59,6 @@ public class FXMLDocumentController implements Initializable {
 
     /************************ Button Operations *****************************/
 
-    
     @FXML
     void createUser(ActionEvent event) {
         Scanner input = new Scanner(System.in);
@@ -193,6 +195,11 @@ public class FXMLDocumentController implements Initializable {
         for (Usermodel s : data) {
             System.out.println(s.getId() + " " + s.getName() + " " + s.getHeight() + " " + s.getWeight() + " " + s.getAge());
         }
+    }
+    
+    @FXML
+    void searchForUser(ActionEvent event) {
+        System.out.println("You clicked the search button!");
     }
 
     /************************ Helper Methods *****************************/
