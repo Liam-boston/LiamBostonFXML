@@ -61,6 +61,9 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private Button buttonSearch;
     
+     @FXML
+    private Button buttonAdvancedSearch;
+
     @FXML
     private TextField searchBar;
 
@@ -84,8 +87,6 @@ public class FXMLDocumentController implements Initializable {
     
     private ObservableList<Usermodel> userData;
     
-    
-    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         manager = (EntityManager) Persistence.createEntityManagerFactory("LiamBostonFXMLPU").createEntityManager();
@@ -99,7 +100,7 @@ public class FXMLDocumentController implements Initializable {
         userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
-    /************************ Button Operations *****************************/
+    /************************ CRUD Operations *****************************/
 
     @FXML
     void createUser(ActionEvent event) {
@@ -263,8 +264,8 @@ public class FXMLDocumentController implements Initializable {
 
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Information Dialog Box");
-            alert.setHeaderText("This is header section to write heading");
-            alert.setContentText("No user");
+            alert.setHeaderText("No user found.");
+            alert.setContentText("There wasn't a user that matched your search criteria.");
             alert.showAndWait();
         } else {
 
@@ -273,6 +274,23 @@ public class FXMLDocumentController implements Initializable {
 
     }
     
+     @FXML
+    void advancedSearch(ActionEvent event) {
+        String name = searchBar.getText();
+
+        List<Usermodel> users = readByNameAdvanced(name);
+
+        if (users == null || users.isEmpty()) {
+
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog Box");
+            alert.setHeaderText("No user(s) found.");
+            alert.setContentText("There aren't any users that match your search criteria.");
+            alert.showAndWait();
+        } else {
+            setTableData(users);
+        }
+    }
 
     /************************ Helper Methods *****************************/
     
@@ -414,4 +432,26 @@ public class FXMLDocumentController implements Initializable {
 
         return users;
     }
+    
+    public List<Usermodel> readByNameAdvanced(String name) {
+        Query query = manager.createNamedQuery("Usermodel.readByNameAdvanced");
+
+        // setting query parameter
+        query.setParameter("name", name);
+
+        // execute query
+        List<Usermodel> users = query.getResultList();
+        
+        if (!users.isEmpty()) {
+            for (Usermodel user : users) {
+                System.out.println(user.getId() + " " + user.getName() + " " + user.getHeight() + " " + user.getWeight() + " " + user.getAge());
+            }
+        } else {
+            System.out.println("No user was found with that name.");
+        }
+       
+
+        return users;
+    }
+
 }
