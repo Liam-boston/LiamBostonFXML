@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Usermodel.findByAge", query = "SELECT u FROM Usermodel u WHERE u.age = :age")
     , @NamedQuery(name = "Usermodel.findByNameAndAge", query = "SELECT u FROM Usermodel u WHERE u.name = :name and u.age = :age")
     , @NamedQuery(name = "Usermodel.readByNameAndAge", query = "SELECT u FROM Usermodel u WHERE u.name = :name and u.age = :age")
+    , @NamedQuery(name = "Usermodel.readByName", query = "SELECT u FROM Usermodel u WHERE u.name = :name")      
 })
 
 public class Usermodel implements Serializable {

@@ -10,11 +10,20 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
@@ -51,10 +60,43 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     private Button buttonSearch;
+    
+    @FXML
+    private TextField searchBar;
 
+    @FXML
+    private TableView<Usermodel> userTable;
+
+    @FXML
+    private TableColumn<Usermodel, Integer> userID;
+
+    @FXML
+    private TableColumn<Usermodel, String> userName;
+
+    @FXML
+    private TableColumn<Usermodel, String> userHeight;
+
+    @FXML
+    private TableColumn<Usermodel, Double> userWeight;
+
+    @FXML
+    private TableColumn<Usermodel, Integer> userAge;
+    
+    private ObservableList<Usermodel> userData;
+    
+    
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         manager = (EntityManager) Persistence.createEntityManagerFactory("LiamBostonFXMLPU").createEntityManager();
+        
+        userName.setCellValueFactory(new PropertyValueFactory<>("Name"));
+        userID.setCellValueFactory(new PropertyValueFactory<>("Id"));
+        userHeight.setCellValueFactory(new PropertyValueFactory<>("Height"));
+        userWeight.setCellValueFactory(new PropertyValueFactory<>("Weight"));
+        userAge.setCellValueFactory(new PropertyValueFactory<>("Age"));
+
+        userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
     /************************ Button Operations *****************************/
@@ -196,11 +238,41 @@ public class FXMLDocumentController implements Initializable {
             System.out.println(s.getId() + " " + s.getName() + " " + s.getHeight() + " " + s.getWeight() + " " + s.getAge());
         }
     }
+        
+    /************************ Table Operations ***************************/
+    
+    public void setTableData(List<Usermodel> userList) {
+
+        userData = FXCollections.observableArrayList();
+
+        userList.forEach(s -> {
+            userData.add(s);
+        });
+
+        userTable.setItems(userData);
+        userTable.refresh();
+    }
     
     @FXML
     void searchForUser(ActionEvent event) {
-        System.out.println("You clicked the search button!");
+        String name = searchBar.getText();
+
+        List<Usermodel> users = readByName(name);
+
+        if (users == null || users.isEmpty()) {
+
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog Box");
+            alert.setHeaderText("This is header section to write heading");
+            alert.setContentText("No user");
+            alert.showAndWait();
+        } else {
+
+            setTableData(users);
+        }
+
     }
+    
 
     /************************ Helper Methods *****************************/
     
@@ -323,4 +395,23 @@ public class FXMLDocumentController implements Initializable {
         return users;
     }
 
+    public List<Usermodel> readByName(String name){
+        Query query = manager.createNamedQuery("Usermodel.readByName");
+
+        // setting query parameter
+        query.setParameter("name", name);
+
+        // execute query
+        List<Usermodel> users = query.getResultList();
+
+        if (!users.isEmpty()) {
+            for (Usermodel user : users) {
+                System.out.println(user.getId() + " " + user.getName() + " " + user.getHeight() + " " + user.getWeight() + " " + user.getAge());
+            }
+        } else {
+            System.out.println("No user was found with that name.");
+        }
+
+        return users;
+    }
 }
