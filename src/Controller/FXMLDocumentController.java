@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -71,6 +72,9 @@ public class FXMLDocumentController implements Initializable {
      
     @FXML
     private Button buttonShowDetails;
+    
+    @FXML
+    private Button buttonShowDetailsInPlace;
 
     @FXML
     private TextField searchBar;
@@ -282,7 +286,7 @@ public class FXMLDocumentController implements Initializable {
 
     }
     
-     @FXML
+    @FXML
     void advancedSearch(ActionEvent event) {
         String name = searchBar.getText();
 
@@ -300,7 +304,7 @@ public class FXMLDocumentController implements Initializable {
         }
     }
     
-     @FXML
+    @FXML
     void showDetails(ActionEvent event) throws IOException {
         Usermodel selectedUser = userTable.getSelectionModel().getSelectedItem();
   
@@ -315,6 +319,29 @@ public class FXMLDocumentController implements Initializable {
         detailedControlled.initData(selectedUser);
 
         Stage stage = new Stage();
+        stage.setScene(tableViewScene);
+        stage.show();
+    }
+    
+    @FXML
+    void showDetailsInPlace(ActionEvent event) throws IOException {
+        Usermodel selectedUser = userTable.getSelectionModel().getSelectedItem();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/DetailedModelView.fxml"));
+
+        Parent detailedModelView = loader.load();
+
+        Scene tableViewScene = new Scene(detailedModelView);
+
+        DetailedModelViewController detailedControlled = loader.getController();
+
+        detailedControlled.initData(selectedUser);
+
+        Scene currentScene = ((Node) event.getSource()).getScene();
+        detailedControlled.setPreviousScene(currentScene);
+
+        Stage stage = (Stage) currentScene.getWindow();
+
         stage.setScene(tableViewScene);
         stage.show();
     }
